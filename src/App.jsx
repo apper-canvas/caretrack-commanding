@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AnimatePresence } from 'framer-motion';
@@ -11,6 +11,54 @@ import Patients from './pages/Patients';
 
 // Components
 import { getIcon } from './utils/iconUtils.js';
+
+const SidePanel = () => {
+  const location = useLocation();
+  const [isOpen, setIsOpen] = useState(true);
+  
+  // Icons
+  const HomeIcon = getIcon('home');
+  const UsersIcon = getIcon('users');
+  const CalendarIcon = getIcon('calendar');
+  const FileTextIcon = getIcon('file-text');
+  const SettingsIcon = getIcon('settings');
+  const ChevronLeftIcon = getIcon('chevron-left');
+  const ChevronRightIcon = getIcon('chevron-right');
+  
+  return (
+    <div className={`side-panel bg-white dark:bg-surface-800 border-r border-surface-200 dark:border-surface-700 h-screen ${isOpen ? 'w-64' : 'w-16'} transition-all duration-300 sticky top-0`}>
+      <div className="p-4 flex items-center justify-between border-b border-surface-200 dark:border-surface-700">
+        {isOpen && <h2 className="text-lg font-semibold text-primary dark:text-primary-light">Navigation</h2>}
+        <button 
+          onClick={() => setIsOpen(!isOpen)}
+          className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
+        >
+          {isOpen ? 
+            <ChevronLeftIcon className="h-5 w-5 text-surface-600 dark:text-surface-300" /> : 
+            <ChevronRightIcon className="h-5 w-5 text-surface-600 dark:text-surface-300" />
+          }
+        </button>
+      </div>
+      
+      <nav className="p-4">
+        <ul className="space-y-2">
+          <li>
+            <Link to="/" target="_blank" className={`side-nav-link ${location.pathname === '/' ? 'active' : ''}`}>
+              <HomeIcon className="h-5 w-5" />
+              {isOpen && <span>Dashboard</span>}
+            </Link>
+          </li>
+          <li>
+            <Link to="/patients" target="_blank" className={`side-nav-link ${location.pathname === '/patients' ? 'active' : ''}`}>
+              <UsersIcon className="h-5 w-5" />
+              {isOpen && <span>Patients</span>}
+            </Link>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  );
+};
 
 const Header = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -137,14 +185,18 @@ function App() {
     <div className="min-h-screen flex flex-col bg-surface-50 dark:bg-surface-900">
       <Header />
       
-      <main className="flex-grow">
-        <AnimatePresence mode="wait">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/patients" element={<Patients />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AnimatePresence>
+      <main className="flex-grow flex">
+        <SidePanel />
+        
+        <div className="flex-1 overflow-auto">
+          <AnimatePresence mode="wait">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/patients" element={<Patients />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AnimatePresence>
+        </div>
       </main>
       
       <Footer />

@@ -70,6 +70,18 @@
   .form-label {
     @apply block mb-2 text-sm font-medium text-surface-700 dark:text-surface-300;
   }
+  
+  .side-panel {
+    @apply shadow-sm z-10;
+  }
+  
+  .side-nav-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 transition-all duration-200;
+  }
+  
+  .side-nav-link.active {
+    @apply bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-light font-medium;
+  }
 
   .badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
@@ -113,5 +125,11 @@
   
   .neu-shadow-dark {
     box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3), -5px -5px 15px rgba(255, 255, 255, 0.05);
+  }
+  
+  @media (max-width: 768px) {
+    .side-panel {
+      @apply fixed left-0 z-50 transition-transform transform;
+    }
   }
 }

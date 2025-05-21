@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
-import { getIcon } from '../utils/iconUtils.jsx';
+import { getIcon } from '../utils/iconUtils.js';
 import PatientForm from '../components/PatientForm';
 import { patients, calculateAge } from '../data/mockData';
 

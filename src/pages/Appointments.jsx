@@ -20,7 +20,6 @@ const Appointments = () => {
   const [appointmentTypes, setAppointmentTypes] = useState([]);
   const [appointmentStatuses, setAppointmentStatuses] = useState([]);
   const [providers, setProviders] = useState([]);
-  const [showAppointmentForm, setShowAppointmentForm] = useState(false);
   
   // Get icons
   const CalendarIcon = getIcon('calendar');

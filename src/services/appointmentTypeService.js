@@ -136,3 +136,12 @@ export const deleteAppointmentType = async (typeId) => {
     throw error;
   }
 };
+
+/**
+ * Alias for fetchAppointmentTypes to maintain compatibility with existing code
+ * @param {Object} params - Optional query parameters for filtering, pagination, etc.
+ * @returns {Promise<Array>} - Array of appointment type records
+ */
+export const getAppointmentTypes = async (params = {}) => {
+  return fetchAppointmentTypes(params);
+};

@@ -89,9 +89,17 @@ const Home = () => {
     }
   };
 
+  // Handle export
+  const handleExport = () => {
     setTimeout(() => {
       toast.success("Patient data exported successfully!");
     }, 1500);
+  };
+  
+  // Handle quick add patient
+  const handleQuickAdd = () => {
+    toast.info("Quick add patient feature activated");
+    // Implementation would normally open a modal or navigate to a form
   };
 
   // Redux
@@ -147,7 +155,7 @@ const Home = () => {
             </button>
           </div>
         </div>
-        
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {patientStats.map((stat, index) => (

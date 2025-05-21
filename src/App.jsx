@@ -43,13 +43,13 @@ const SidePanel = () => {
       <nav className="p-4">
         <ul className="space-y-2">
           <li>
-            <Link to="/" target="_blank" className={`side-nav-link ${location.pathname === '/' ? 'active' : ''}`}>
+            <Link to="/" className={`side-nav-link ${location.pathname === '/' ? 'active' : ''}`}>
               <HomeIcon className="h-5 w-5" />
               {isOpen && <span>Dashboard</span>}
             </Link>
           </li>
           <li>
-            <Link to="/patients" target="_blank" className={`side-nav-link ${location.pathname === '/patients' ? 'active' : ''}`}>
+            <Link to="/patients" className={`side-nav-link ${location.pathname === '/patients' ? 'active' : ''}`}>
               <UsersIcon className="h-5 w-5" />
               {isOpen && <span>Patients</span>}
             </Link>

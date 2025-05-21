@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
+import PatientForm from './PatientForm';
 import { getIcon } from '../utils/iconUtils.js';
+import { patients } from '../data/mockData.js';
 
 // Mock data for patient types
 const patientTypes = ["Emergency", "Outpatient", "Inpatient", "Specialist Referral"];
@@ -20,10 +22,12 @@ const MainFeature = ({ onScheduleSuccess }) => {
   // Form state
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    patientName: "",
+    patientId: "",
+    patientName: "", // This will be set based on patientId selection or new patient creation
     dateOfBirth: "",
     gender: "",
     phoneNumber: "",
+    address: "",
     email: "",
     patientType: "",
     appointmentDate: "",
@@ -32,9 +36,12 @@ const MainFeature = ({ onScheduleSuccess }) => {
     reason: "",
     notes: ""
   });
+  const [showNewPatientModal, setShowNewPatientModal] = useState(false);
   const [errors, setErrors] = useState({});
   const [providers, setProviders] = useState([]);
-  
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [patientsList, setPatientsList] = useState([...patients]);
+
   // Get available time slots based on date and provider
   const getAvailableTimeSlots = () => {
     // In a real app, this would be an API call
@@ -56,6 +63,8 @@ const MainFeature = ({ onScheduleSuccess }) => {
   const ArrowLeftIcon = getIcon('arrow-left');
   const CheckIcon = getIcon('check-circle');
   const PlusIcon = getIcon('plus-circle');
+  const UserPlusIcon = getIcon('user-plus');
+  const XIcon = getIcon('x');
   
   // Update available providers when patientType changes
   useEffect(() => {
@@ -71,7 +80,29 @@ const MainFeature = ({ onScheduleSuccess }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
+    // Handle patient selection
+    if (name === 'patientId') {
+      if (value === 'new') {
+        // User wants to create a new patient
+        setShowNewPatientModal(true);
+      } else if (value) {
+        // User selected an existing patient
+        const patient = patientsList.find(p => p.id.toString() === value);
+        if (patient) {
+          setSelectedPatient(patient);
+          setFormData(prev => ({
+            ...prev,
+            patientName: `${patient.firstName} ${patient.lastName}`,
+            dateOfBirth: patient.dob,
+            gender: patient.gender,
+            phoneNumber: patient.phone,
+            email: patient.email,
+            address: patient.address
+          }));
+        }
+      }
+    }
     // Clear error when field is edited
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
@@ -83,7 +114,7 @@ const MainFeature = ({ onScheduleSuccess }) => {
     const newErrors = {};
     
     if (step === 1) {
-      if (!formData.patientName.trim()) newErrors.patientName = "Patient name is required";
+      if (!formData.patientId) newErrors.patientId = "Patient selection is required";
       if (!formData.dateOfBirth) newErrors.dateOfBirth = "Date of birth is required";
       if (!formData.gender) newErrors.gender = "Gender is required";
       if (!formData.phoneNumber.trim()) newErrors.phoneNumber = "Phone number is required";
@@ -114,6 +145,24 @@ const MainFeature = ({ onScheduleSuccess }) => {
     setStep(prev => prev - 1);
   };
   
+  // Handle patient form submission
+  const handlePatientFormSubmit = (newPatient) => {
+    // Add new patient to the list
+    const formattedPatient = {
+      ...newPatient,
+      phone: newPatient.phone,
+      dob: newPatient.dob
+    };
+    setPatientsList(prev => [...prev, formattedPatient]);
+    
+    // Select the new patient
+    setSelectedPatient(formattedPatient);
+    setFormData(prev => ({
+      ...prev, patientId: formattedPatient.id.toString(), patientName: `${formattedPatient.firstName} ${formattedPatient.lastName}`,
+      dateOfBirth: formattedPatient.dob, gender: formattedPatient.gender, phoneNumber: formattedPatient.phone, email: formattedPatient.email, address: formattedPatient.address
+    }));
+    setShowNewPatientModal(false);
+  };
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -129,6 +178,7 @@ const MainFeature = ({ onScheduleSuccess }) => {
       
       // Reset form after successful submission
       setFormData({
+        patientId: "",
         patientName: "",
         dateOfBirth: "",
         gender: "",
@@ -139,7 +189,8 @@ const MainFeature = ({ onScheduleSuccess }) => {
         appointmentTime: "",
         provider: "",
         reason: "",
-        notes: ""
+        notes: "",
+        address: ""
       });
       setStep(1);
     }
@@ -200,24 +251,54 @@ const MainFeature = ({ onScheduleSuccess }) => {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="patientName" className="form-label">
-                    Patient Name <span className="text-red-500">*</span>
+                  <label htmlFor="patientId" className="form-label">
+                    Patient <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                       <UserIcon className="h-5 w-5 text-surface-400" />
                     </div>
-                    <input
-                      type="text"
-                      id="patientName"
-                      name="patientName"
-                      value={formData.patientName}
+                    <select
+                      id="patientId"
+                      name="patientId"
+                      value={formData.patientId}
                       onChange={handleChange}
-                      className={`form-input pl-10 ${errors.patientName ? 'border-red-500 focus:ring-red-500' : ''}`}
-                      placeholder="Full name"
-                    />
+                      className={`form-input pl-10 ${errors.patientId ? 'border-red-500 focus:ring-red-500' : ''}`}
+                    >
+                      <option value="">Select a patient</option>
+                      {patientsList.map((patient) => (
+                        <option key={patient.id} value={patient.id.toString()}>
+                          {patient.firstName} {patient.lastName}
+                        </option>
+                      ))}
+                      <option value="new" className="font-semibold text-primary">Create New Patient...</option>
+                    </select>
                   </div>
-                  {errors.patientName && <p className="mt-1 text-sm text-red-500">{errors.patientName}</p>}
+                  {errors.patientId && <p className="mt-1 text-sm text-red-500">{errors.patientId}</p>}
+                </div>
+                
+                {/* New Patient Modal */}
+                {showNewPatientModal && (
+                  <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center">
+                    <div className="bg-white dark:bg-surface-800 rounded-lg shadow-xl p-6 m-4 max-w-2xl w-full">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-xl font-semibold flex items-center">
+                          <UserPlusIcon className="h-5 w-5 text-primary mr-2" />
+                          Create New Patient
+                        </h3>
+                        <button 
+                          onClick={() => setShowNewPatientModal(false)}
+                          className="text-surface-500 hover:text-surface-700"
+                        >
+                          <XIcon className="h-5 w-5" />
+                        </button>
+                      </div>
+                      <PatientForm 
+                        onSubmit={handlePatientFormSubmit} 
+                        onCancel={() => setShowNewPatientModal(false)}
+                      />
+                    </div>
+                  </div>
                 </div>
                 
                 <div>

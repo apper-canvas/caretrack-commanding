@@ -154,7 +154,7 @@ const Header = () => {
         <div className="flex items-center space-x-2">
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
             <span className="text-white font-bold text-lg">C</span>
-          </div>
+          </div> 
           <h1 className="text-xl font-bold text-primary dark:text-primary-light">CareTrack</h1>
         </div>
         
@@ -238,7 +238,7 @@ const Footer = () => {
           <div className="flex items-center text-surface-500 dark:text-surface-400 text-sm">
             <span>Made with</span>
             <HeartIcon className="h-4 w-4 mx-1 text-red-500" />
-            <span>for healthcare professionals</span>
+            <span>for healthcare professionals</span> 
           </div>
         </div>
       </div>

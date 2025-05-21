@@ -17,16 +17,16 @@ export default {
       
       colors: {
         primary: {
-          DEFAULT: '#3b82f6',
-          light: '#60a5fa',
-          dark: '#2563eb'
+          DEFAULT: '#0891b2', // Medical teal-blue
+          light: '#22d3ee',
+          dark: '#0e7490'
         },
         secondary: {
-          DEFAULT: '#10b981',
-          light: '#34d399',
-          dark: '#059669'
+          DEFAULT: '#16a34a', // Healing green
+          light: '#4ade80',
+          dark: '#15803d'
         },
-        accent: '#8b5cf6',
+        accent: '#0369a1', // Complementary blue
         surface: {
           50: '#f8fafc',   // Lightest
           100: '#f1f5f9',

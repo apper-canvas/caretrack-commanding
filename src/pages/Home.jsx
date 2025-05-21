@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { getIcon } from '../utils/iconUtils.js';
-import MainFeature from '../components/MainFeature';
 import { Link } from 'react-router-dom';
 
 // Mock data for patient dashboard
@@ -90,12 +89,6 @@ const Home = () => {
     }
   };
 
-  const handleQuickAdd = () => {
-    toast.success("Quick add feature triggered! Patient form would appear here.");
-  };
-
-  const handleExport = () => {
-    toast.info("Preparing patient data export...");
     setTimeout(() => {
       toast.success("Patient data exported successfully!");
     }, 1500);

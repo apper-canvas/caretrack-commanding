@@ -1,6 +1,6 @@
 import { User, Moon, Sun, Menu, Heart, ArrowRight, Clock, Calendar, FileText, BarChart, Activity, DollarSign, 
   Users, Building, ChevronRight, Check, X as XIcon, AlertCircle, InfoIcon, Search, Plus, Edit, Trash2, Filter, Eye, UserPlus,
-  Stethoscope, Flask, Pill, Scissors, Shield, Scan, List, Share, Download, Save, Printer, UserCheck, ChevronLeft, 
+  Stethoscope, TestTube, Pill, Scissors, Shield, Scan, List, Share, Download, Save, Printer, UserCheck, ChevronLeft, 
   File, ShieldAlert, Bookmark } from 'lucide-react';
 
 // Map of icon names to their components
@@ -32,7 +32,7 @@ const iconMapping = {
   'eye': Eye,
   'userplus': UserPlus,
   'stethoscope': Stethoscope,
-  'flask': Flask,
+  'flask': TestTube,
   'pill': Pill,
   'scissors': Scissors,
   'shield': Shield,

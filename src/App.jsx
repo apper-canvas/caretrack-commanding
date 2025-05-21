@@ -16,6 +16,7 @@ import MedicalRecords from './pages/MedicalRecords';
 
 // Components
 import { getIcon } from './utils/iconUtils.js';
+import MainFeature from './components/MainFeature';
 import PatientContextBanner from './components/PatientContextBanner';
 
 // Navigation items configuration

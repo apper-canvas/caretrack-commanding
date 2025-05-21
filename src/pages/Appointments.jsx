@@ -11,6 +11,7 @@ const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [showAppointmentDetails, setShowAppointmentDetails] = useState(false);
+  const [showAppointmentForm, setShowAppointmentForm] = useState(false);
   
   // Get icons
   const CalendarIcon = getIcon('calendar');
@@ -31,9 +32,20 @@ const Appointments = () => {
     setShowAppointmentDetails(true);
   };
   
+  // Handle close modal
+  const handleCloseModal = () => {
+    setShowAppointmentForm(false);
+  };
+  
+  // Handle schedule success
+  const handleScheduleSuccess = () => {
+    toast.success("Appointment scheduled successfully!");
+    setShowAppointmentForm(false);
+  };
+  
   // Handle add new appointment
   const handleAddAppointment = () => {
-    toast.info("New appointment feature will be implemented soon!");
+    setShowAppointmentForm(true);
   };
   
   return (
@@ -186,6 +198,29 @@ const Appointments = () => {
               </div>
             </div>
           </div>
+        
+        {/* New Appointment Modal */}
+        {showAppointmentForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white dark:bg-surface-800 rounded-lg shadow-xl w-full max-w-4xl p-6 max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-medium">Schedule New Appointment</h3>
+                <button 
+                  onClick={handleCloseModal}
+                  className="p-1 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700"
+                >
+                  <XIcon className="h-5 w-5" />
+                </button>
+              </div>
+              
+              <MainFeature onScheduleSuccess={handleScheduleSuccess} />
+            </motion.div>
+          </div>
+        )}
         )}
       </motion.div>
     </div>

@@ -16,7 +16,7 @@ const medicalProviders = [
   { id: 6, name: "Dr. James Wilson", specialty: "Orthopedics", available: false }
 ];
 
-const MainFeature = () => {
+const MainFeature = ({ onScheduleSuccess }) => {
   // Form state
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -121,6 +121,11 @@ const MainFeature = () => {
       // In a real app, this would be an API call
       console.log("Form submitted:", formData);
       toast.success("Appointment scheduled successfully!");
+      
+      // Notify parent component of successful scheduling
+      if (onScheduleSuccess) {
+        onScheduleSuccess();
+      }
       
       // Reset form after successful submission
       setFormData({

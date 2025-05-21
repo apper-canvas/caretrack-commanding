@@ -299,7 +299,7 @@ const MainFeature = ({ onScheduleSuccess }) => {
                       />
                     </div>
                   </div>
-                
+                )}
                 <div>
                   <label htmlFor="dateOfBirth" className="form-label">
                     Date of Birth <span className="text-red-500">*</span>

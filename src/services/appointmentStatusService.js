@@ -136,3 +136,7 @@ export const deleteAppointmentStatus = async (statusId) => {
     throw error;
   }
 };
+
+// Export the fetchAppointmentStatuses function as getAppointmentStatuses for compatibility
+// with existing code that imports this function name
+export const getAppointmentStatuses = fetchAppointmentStatuses;

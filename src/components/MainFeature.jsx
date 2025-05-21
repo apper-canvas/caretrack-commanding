@@ -92,14 +92,17 @@ const MainFeature = ({ onScheduleSuccess }) => {
         const patient = patientsList.find(p => p.id.toString() === value);
         if (patient) {
           setSelectedPatient(patient);
+          // Populate all available patient details when a patient is selected
           setFormData(prev => ({
             ...prev,
             patientName: `${patient.firstName} ${patient.lastName}`,
             dateOfBirth: patient.dob,
             gender: patient.gender,
             phoneNumber: patient.phone,
+            address: patient.address,
             email: patient.email,
-            address: patient.address
+            insuranceProvider: patient.insuranceProvider || '',
+            insuranceNumber: patient.insuranceNumber || ''
           }));
         }
       }

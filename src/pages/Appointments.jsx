@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { mockAppointments, appointmentTypes } from '../data/mockAppointmentsData';
 import CalendarView from '../components/appointments/CalendarView';
 import ListView from '../components/appointments/ListView';
+import MainFeature from '../components/MainFeature';
 import { getIcon } from '../utils/iconUtils';
 
 const Appointments = () => {

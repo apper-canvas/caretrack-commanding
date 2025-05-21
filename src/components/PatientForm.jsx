@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 
 /**
  * Reusable PatientForm component for both adding and editing patient information
  * @param {Object} patient - Patient data for editing (optional)
- * @param {Function} onSubmit - Function to call when form is submitted
+ * @param {Function} onSubmitForm - Function to call when form is submitted
  * @param {Function} onCancel - Function to call when form is cancelled
  */
-const PatientForm = ({ patient, onSubmit, onCancel }) => {
+const PatientForm = forwardRef(({ patient, onSubmitForm, onCancel }, ref) => {
   const isEdit = !!patient;
+
   
   const [formData, setFormData] = useState({
     firstName: '',
@@ -63,7 +64,7 @@ const PatientForm = ({ patient, onSubmit, onCancel }) => {
   };
   
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors = {}; 
     
     // Required fields
     if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
@@ -81,9 +82,18 @@ const PatientForm = ({ patient, onSubmit, onCancel }) => {
     return Object.keys(newErrors).length === 0;
   };
   
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
+  // Expose methods to parent component
+  useImperativeHandle(ref, () => ({
+    getFormData: () => formData,
+    checkValidity: validateForm
+  }));
+  
+  // Modified to not use e.preventDefault since we're no longer in a form
+  const handleSubmit = () => {
+    if (!onSubmitForm) {
+      console.error('No onSubmitForm handler provided to PatientForm');
+      return;
+    }
     if (validateForm()) {
       // Process data for submission
       const processedData = {
@@ -101,12 +111,12 @@ const PatientForm = ({ patient, onSubmit, onCancel }) => {
         processedData.lastVisit = new Date().toISOString().split('T')[0];
       }
       
-      onSubmit(processedData);
+      onSubmitForm(processedData);
     }
   };
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label htmlFor="firstName" className="form-label">First Name <span className="text-red-500">*</span></label>
@@ -168,10 +178,10 @@ const PatientForm = ({ patient, onSubmit, onCancel }) => {
       
       <div className="flex justify-end space-x-3 mt-6">
         <button type="button" onClick={onCancel} className="btn btn-outline">Cancel</button>
-        <button type="submit" className="btn btn-primary">{isEdit ? 'Update Patient' : 'Add Patient'}</button>
+        <button type="button" onClick={handleSubmit} className="btn btn-primary">{isEdit ? 'Update Patient' : 'Add Patient'}</button>
       </div>
-    </form>
+    </div>
   );
-};
+});
 
 export default PatientForm;

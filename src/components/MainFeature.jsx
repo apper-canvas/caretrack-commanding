@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
 import PatientForm from './PatientForm';
@@ -40,6 +40,7 @@ const MainFeature = ({ onScheduleSuccess }) => {
   const [errors, setErrors] = useState({});
   const [providers, setProviders] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const patientFormRef = useRef();
   const [patientsList, setPatientsList] = useState([...patients]);
 
   // Get available time slots based on date and provider
@@ -145,8 +146,19 @@ const MainFeature = ({ onScheduleSuccess }) => {
     setStep(prev => prev - 1);
   };
   
-  // Handle patient form submission
-  const handlePatientFormSubmit = (newPatient) => {
+  // Handle patient form submission from the modal
+  const handlePatientFormSubmit = () => {
+    // Check if the form is valid
+    if (!patientFormRef.current || !patientFormRef.current.checkValidity()) {
+      return;
+    }
+    
+    // Get form data from the PatientForm component
+    const formData = patientFormRef.current.getFormData();
+    
+    // Process data for submission as before
+    const newPatient = processPatientFormData(formData);
+    
     // Add new patient to the list
     const formattedPatient = {
       ...newPatient,
@@ -163,6 +175,27 @@ const MainFeature = ({ onScheduleSuccess }) => {
     }));
     setShowNewPatientModal(false);
   };
+  
+  // Process patient form data
+  const processPatientFormData = (data) => {
+    const processedData = {
+      ...data,
+      medicalConditions: data.medicalConditions ? data.medicalConditions.split(',').map(item => item.trim()) : [],
+      allergies: data.allergies ? data.allergies.split(',').map(item => item.trim()) : []
+    };
+    
+    // If adding new, generate a temporary ID (this would be handled by the backend in real app)
+    processedData.id = Date.now();
+    processedData.lastVisit = new Date().toISOString().split('T')[0];
+    
+    return processedData;
+  };
+  
+  // Handle cancel from patient form modal
+  const handlePatientFormCancel = () => {
+    setShowNewPatientModal(false);
+  };
+  
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -294,8 +327,10 @@ const MainFeature = ({ onScheduleSuccess }) => {
                         </button>
                       </div>
                       <PatientForm 
-                        onSubmit={handlePatientFormSubmit} 
-                        onCancel={() => setShowNewPatientModal(false)}
+                        ref={patientFormRef}
+                        onSubmitForm={handlePatientFormSubmit} 
+                        onCancel={handlePatientFormCancel}
+                        modalMode={true}
                       />
                     </div>
                   </div>

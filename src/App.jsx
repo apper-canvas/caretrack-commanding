@@ -54,6 +54,13 @@ const SidePanel = () => {
               {isOpen && <span>Patients</span>}
             </Link>
           </li>
+          <li>
+            <Link to="/appointments" className={`side-nav-link ${location.pathname === '/appointments' ? 'active' : ''}`}>
+              <CalendarIcon className="h-5 w-5" />
+              {isOpen && <span>Appointments</span>}
+            </Link>
+          </li>
+         
         </ul>
       </nav>
     </div>
@@ -98,7 +105,6 @@ const Header = () => {
           <nav className="flex space-x-4">
             <a href="/" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light">Dashboard</a>
             <a href="/patients" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light">Patients</a>
-            <a href="/appointments" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light">Appointments</a>
             <a href="/records" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light">Records</a>
          </nav>
           
@@ -131,7 +137,6 @@ const Header = () => {
           <nav className="flex flex-col space-y-3">
             <a href="/" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light py-2">Dashboard</a>
             <a href="/patients" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light py-2">Patients</a>
-            <a href="/appointments" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light py-2">Appointments</a>
             <a href="/records" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light py-2">Records</a>
             
             <div className="flex items-center justify-between pt-2 border-t dark:border-surface-700">

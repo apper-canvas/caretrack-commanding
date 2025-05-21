@@ -23,6 +23,16 @@ export const fetchProviders = async (params = {}) => {
 };
 
 /**
+ * Get providers from the database (alias for fetchProviders)
+ * @param {Object} params - Optional query parameters for filtering, pagination, etc.
+ * @returns {Promise<Array>} - Array of provider records
+ */
+export const getProviders = async (params = {}) => {
+  // This is an alias for fetchProviders to maintain backward compatibility
+  return fetchProviders(params);
+};
+
+/**
  * Fetch a specific provider by ID
  * @param {string|number} providerId - The ID of the provider to fetch
  * @returns {Promise<Object>} - Provider record

@@ -1,4 +1,5 @@
-import * as LucideIcons from 'lucide-react';
+import { User, Moon, Sun, Menu, Heart, ArrowRight, Clock, Calendar, FileText, BarChart, Activity, DollarSign, 
+  Users, Building, ChevronRight, Check, X as XIcon, AlertCircle, InfoIcon, Search, Plus, Edit, Trash2, Filter, Eye, UserPlus } from 'lucide-react';
 
 export const getIcon = (iconName) => {
   // Handle null/undefined case
@@ -30,7 +31,13 @@ export const getIcon = (iconName) => {
   } else {
     // For single word icons, just capitalize first letter
     componentName = iconName.charAt(0).toUpperCase() + iconName.slice(1);
-  }
+    'search': Search,
+    'plus': Plus,
+    'edit': Edit,
+    'trash': Trash2,
+    'filter': Filter,
+    'eye': Eye,
+    'user-plus': UserPlus
 
   // Step 3: Check if we have a valid component after transformation
   if (LucideIcons[componentName] && typeof LucideIcons[componentName] === 'function') {

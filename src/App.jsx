@@ -7,6 +7,7 @@ import { AnimatePresence } from 'framer-motion';
 // Pages
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
+import Patients from './pages/Patients';
 
 // Components
 import { getIcon } from './utils/iconUtils';
@@ -48,10 +49,10 @@ const Header = () => {
         <div className="hidden md:flex items-center space-x-6">
           <nav className="flex space-x-4">
             <a href="/" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light">Dashboard</a>
-            <a href="/" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light">Patients</a>
-            <a href="/" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light">Appointments</a>
-            <a href="/" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light">Records</a>
-          </nav>
+            <a href="/patients" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light">Patients</a>
+            <a href="/appointments" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light">Appointments</a>
+            <a href="/records" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light">Records</a>
+         </nav>
           
           <div className="flex items-center space-x-3">
             <button 
@@ -81,9 +82,9 @@ const Header = () => {
         <div className="md:hidden mt-3 px-4 py-3 bg-white dark:bg-surface-800 border-t dark:border-surface-700">
           <nav className="flex flex-col space-y-3">
             <a href="/" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light py-2">Dashboard</a>
-            <a href="/" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light py-2">Patients</a>
-            <a href="/" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light py-2">Appointments</a>
-            <a href="/" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light py-2">Records</a>
+            <a href="/patients" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light py-2">Patients</a>
+            <a href="/appointments" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light py-2">Appointments</a>
+            <a href="/records" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light py-2">Records</a>
             
             <div className="flex items-center justify-between pt-2 border-t dark:border-surface-700">
               <div className="flex items-center space-x-2">
@@ -140,6 +141,7 @@ function App() {
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/patients" element={<Patients />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>

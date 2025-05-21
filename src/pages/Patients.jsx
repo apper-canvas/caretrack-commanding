@@ -4,8 +4,14 @@ import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { getIcon } from '../utils/iconUtils.js';
 import PatientForm from '../components/PatientForm';
-import { setActivePatient, updateActivePatient, clearActivePatient } from '../store/patientSlice';
-import { patients, calculateAge } from '../data/mockData';
+import { 
+  setActivePatient, 
+  updateActivePatient, 
+  clearActivePatient 
+} from '../store/patientSlice';
+import { 
+  getPatients, createPatient, updatePatient, deletePatient, getPatientById 
+} from '../services/patientService';
 
 const Patients = () => {
   // Icons
@@ -28,6 +34,7 @@ const Patients = () => {
     status: 'all',
     gender: 'all'
   });
+  const [loading, setLoading] = useState(true);
 
   // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -44,9 +51,30 @@ const Patients = () => {
   const dispatch = useDispatch();
   const activePatient = useSelector(state => state.patient.activePatient);
 
-  // Initialize patient data
+  // Calculate age function
+  const calculateAge = (dob) => {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    return age;
+  };
+
+  // Fetch patient data from the service
   useEffect(() => {
-    setPatientList(patients);
+    const fetchPatients = async () => {
+      setLoading(true);
+      try {
+        const data = await getPatients();
+        setPatientList(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch patients:", error);
+        toast.error("Failed to load patients");
+        setPatientList([]);
+        setLoading(false);
+      }
+    };
+    fetchPatients();
   }, []);
 
   // Filter and search patients
@@ -117,11 +145,21 @@ const Patients = () => {
   };
 
   // Handle add new patient
-  const handleAddNewPatient = (patientData) => {
-    // Add new patient to the list
-    setPatientList(prevList => [patientData, ...prevList]);
-    setIsAddModalOpen(false);
-    toast.success(`Patient ${patientData.firstName} ${patientData.lastName} has been added!`);
+  const handleAddNewPatient = async (patientData) => {
+    try {
+      setLoading(true);
+      // Call service to create patient
+      const newPatient = await createPatient(patientData);
+      
+      // Add new patient to the list
+      setPatientList(prevList => [newPatient, ...prevList]);
+      setIsAddModalOpen(false);
+      toast.success(`Patient ${patientData.firstName} ${patientData.lastName} has been added!`);
+      setLoading(false);
+    } catch (error) {
+      toast.error(`Failed to add patient: ${error.message}`);
+      setLoading(false);
+    }
   };
 
   // Handle edit patient
@@ -196,6 +234,8 @@ const Patients = () => {
       transition={{ duration: 0.3 }}
     >
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold text-surface-800 dark:text-surface-100">Patients</h1>
+        <p className="text-surface-600 dark:text-surface-400 mt-1">Manage your patient records</p>
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-surface-800 dark:text-surface-100">Patients</h1>
           <p className="text-surface-600 dark:text-surface-400 mt-1">Manage your patient records</p>
@@ -271,126 +311,133 @@ const Patients = () => {
           </div>
         )}
         
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead className="bg-surface-100 dark:bg-surface-800">
-              <tr>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-surface-600 dark:text-surface-400 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort('lastName')}
-                >
-                  Name
-                  {sortField === 'lastName' && (
-                    <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
-                  )}
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-surface-600 dark:text-surface-400 uppercase tracking-wider">
-                  Contact Info
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-surface-600 dark:text-surface-400 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort('dob')}
-                >
-                  Age/Gender
-                  {sortField === 'dob' && (
-                    <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
-                  )}
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-surface-600 dark:text-surface-400 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort('lastVisit')}
-                >
-                  Last Visit
-                  {sortField === 'lastVisit' && (
-                    <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
-                  )}
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-surface-600 dark:text-surface-400 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort('status')}
-                >
-                  Status
-                  {sortField === 'status' && (
-                    <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
-                  )}
-                </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-surface-600 dark:text-surface-400 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-surface-200 dark:divide-surface-700">
-              {filteredPatients.length > 0 ? (
-                filteredPatients.map(patient => (
-                  <tr key={patient.id} className="hover:bg-surface-50 dark:hover:bg-surface-800">
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <div className="font-medium text-surface-900 dark:text-surface-100">{patient.lastName}, {patient.firstName}</div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="text-sm text-surface-600 dark:text-surface-400">{patient.phone}</div>
-                      <div className="text-sm text-surface-500 dark:text-surface-500">{patient.email}</div>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <div className="text-sm text-surface-600 dark:text-surface-400">{calculateAge(patient.dob)} years</div>
-                      <div className="text-sm text-surface-500 dark:text-surface-500">{patient.gender}</div>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-surface-600 dark:text-surface-400">
-                      {patient.lastVisit}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <span className={`badge ${patient.status === 'Active' ? 'badge-green' : 'badge-red'}`}>
-                        {patient.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-right text-sm">
-                      <div className="flex justify-end space-x-2">
-                        <button 
-                          onClick={() => handleSetActivePatient(patient)}
-                          className={`p-1.5 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 ${activePatient && activePatient.id === patient.id ? 'text-primary dark:text-primary-light bg-primary-light/20 dark:bg-primary-dark/20' : 'text-surface-600 dark:text-surface-400'}`}
-                          title={activePatient && activePatient.id === patient.id ? "Active patient context" : "Set as active patient"}
-                          disabled={activePatient && activePatient.id === patient.id}
-                        >
-                          <UserCheckIcon className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => openViewModal(patient)}
-                          className="p-1.5 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-400"
-                          title="View patient details"
-                        >
-                          <EyeIcon className="w-4 h-4" />
-                        </button>
-                        
-                        <button 
-                          onClick={() => openEditModal(patient)}
-                          className="p-1.5 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-400"
-                          title="Edit patient"
-                        >
-                          <EditIcon className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => openDeleteModal(patient)}
-                          className="p-1.5 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 text-red-500"
-                          title="Delete patient"
-                        >
-                          <TrashIcon className="w-4 h-4" />
-                        </button>
-                      </div>
+        {loading ? (
+          <div className="flex justify-center items-center p-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <span className="ml-2 text-surface-600 dark:text-surface-400">Loading patients...</span>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead className="bg-surface-100 dark:bg-surface-800">
+                <tr>
+                  <th 
+                    className="px-4 py-3 text-left text-xs font-medium text-surface-600 dark:text-surface-400 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSort('lastName')}
+                  >
+                    Name
+                    {sortField === 'lastName' && (
+                      <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                    )}
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-surface-600 dark:text-surface-400 uppercase tracking-wider">
+                    Contact Info
+                  </th>
+                  <th 
+                    className="px-4 py-3 text-left text-xs font-medium text-surface-600 dark:text-surface-400 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSort('dob')}
+                  >
+                    Age/Gender
+                    {sortField === 'dob' && (
+                      <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                    )}
+                  </th>
+                  <th 
+                    className="px-4 py-3 text-left text-xs font-medium text-surface-600 dark:text-surface-400 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSort('lastVisit')}
+                  >
+                    Last Visit
+                    {sortField === 'lastVisit' && (
+                      <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                    )}
+                  </th>
+                  <th 
+                    className="px-4 py-3 text-left text-xs font-medium text-surface-600 dark:text-surface-400 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSort('status')}
+                  >
+                    Status
+                    {sortField === 'status' && (
+                      <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                    )}
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-surface-600 dark:text-surface-400 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-surface-200 dark:divide-surface-700">
+                {filteredPatients.length > 0 ? (
+                  filteredPatients.map(patient => (
+                    <tr key={patient.id} className="hover:bg-surface-50 dark:hover:bg-surface-800">
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <div className="font-medium text-surface-900 dark:text-surface-100">{patient.lastName}, {patient.firstName}</div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="text-sm text-surface-600 dark:text-surface-400">{patient.phone}</div>
+                        <div className="text-sm text-surface-500 dark:text-surface-500">{patient.email}</div>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <div className="text-sm text-surface-600 dark:text-surface-400">{calculateAge(patient.dob)} years</div>
+                        <div className="text-sm text-surface-500 dark:text-surface-500">{patient.gender}</div>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-surface-600 dark:text-surface-400">
+                        {patient.lastVisit}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <span className={`badge ${patient.status === 'Active' ? 'badge-green' : 'badge-red'}`}>
+                          {patient.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-right text-sm">
+                        <div className="flex justify-end space-x-2">
+                          <button 
+                            onClick={() => handleSetActivePatient(patient)}
+                            className={`p-1.5 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 ${activePatient && activePatient.id === patient.id ? 'text-primary dark:text-primary-light bg-primary-light/20 dark:bg-primary-dark/20' : 'text-surface-600 dark:text-surface-400'}`}
+                            title={activePatient && activePatient.id === patient.id ? "Active patient context" : "Set as active patient"}
+                            disabled={activePatient && activePatient.id === patient.id}
+                          >
+                            <UserCheckIcon className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => openViewModal(patient)}
+                            className="p-1.5 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-400"
+                            title="View patient details"
+                          >
+                            <EyeIcon className="w-4 h-4" />
+                          </button>
+                          
+                          <button 
+                            onClick={() => openEditModal(patient)}
+                            className="p-1.5 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-400"
+                            title="Edit patient"
+                          >
+                            <EditIcon className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => openDeleteModal(patient)}
+                            className="p-1.5 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 text-red-500"
+                            title="Delete patient"
+                          >
+                            <TrashIcon className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="px-4 py-6 text-center text-surface-600 dark:text-surface-400">
+                      {searchTerm || (filters.status !== 'all' || filters.gender !== 'all') ? 
+                        'No patients found with the current filters.' : 
+                        'No patients available. Add your first patient!'}
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="px-4 py-6 text-center text-surface-600 dark:text-surface-400">
-                    {searchTerm || (filters.status !== 'all' || filters.gender !== 'all') ? 
-                      'No patients found with the current filters.' : 
-                      'No patients available. Add your first patient!'}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+                      </div>
       
       {/* Add Patient Modal */}
       {isAddModalOpen && (
@@ -496,6 +543,7 @@ const Patients = () => {
         </div>
       )}
       
+
       {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && currentPatient && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

@@ -1,123 +1,145 @@
-import { useState } from 'react';
-import { format, parseISO } from 'date-fns';
+import { useMemo } from 'react';
+import { format } from 'date-fns';
 import { getIcon } from '../../utils/iconUtils';
 
 const TimelineView = ({ records, onViewRecord, loading }) => {
-  // Icons for each record type
+  // Icons
+  const PillIcon = getIcon('pill');
+  const StethoscopeIcon = getIcon('stethoscope');
+  const TestTubeIcon = getIcon('flask');
+  const ScissorsIcon = getIcon('scissors');
+  const ScanIcon = getIcon('scan');
+  
+  // Group records by month/year
+  const groupedRecords = useMemo(() => {
+    if (!records || !records.length) return [];
+    
+    const groups = records.reduce((acc, record) => {
+      const date = new Date(record.date);
+      const monthYear = `${date.getFullYear()}-${date.getMonth()}`;
+      
+      if (!acc[monthYear]) {
+        acc[monthYear] = {
+          label: format(date, 'MMMM yyyy'),
+          items: []
+        };
+      }
+      
+      acc[monthYear].items.push(record);
+      return acc;
+    }, {});
+    
+    // Convert to array and sort by date (newest first)
+    return Object.values(groups).sort((a, b) => {
+      const aDate = new Date(a.items[0].date);
+      const bDate = new Date(b.items[0].date);
+      return bDate - aDate;
+    });
+  }, [records]);
+  
+  // Get icon based on record type
   const getRecordIcon = (type) => {
     switch (type) {
-      case 'visit':
-        return getIcon('stethoscope');
-      case 'lab':
-        return getIcon('flask');
       case 'medication':
-        return getIcon('pill');
+        return <PillIcon className="h-4 w-4" />;
+      case 'visit':
+        return <StethoscopeIcon className="h-4 w-4" />;
+      case 'lab':
+        return <TestTubeIcon className="h-4 w-4" />;
       case 'procedure':
-        return getIcon('scissors');
-      case 'vaccination':
-        return getIcon('shield');
+        return <ScissorsIcon className="h-4 w-4" />;
       case 'imaging':
-        return getIcon('scan');
-      case 'note':
-        return getIcon('file-text');
+        return <ScanIcon className="h-4 w-4" />;
       default:
-        return getIcon('file');
+        return <StethoscopeIcon className="h-4 w-4" />;
     }
   };
-
-  // Get color class based on record type
+  
+  // Get record type color
   const getTypeColor = (type) => {
-    switch (type) {
-      case 'visit':
-        return 'border-primary-light text-primary dark:text-primary-light dark:border-primary-dark';
-      case 'lab':
-        return 'border-purple-400 text-purple-600 dark:text-purple-300 dark:border-purple-700';
-      case 'medication':
-        return 'border-secondary-light text-secondary dark:text-secondary-light dark:border-secondary-dark';
-      case 'procedure':
-        return 'border-amber-400 text-amber-600 dark:text-amber-300 dark:border-amber-700';
-      case 'vaccination':
-        return 'border-teal-400 text-teal-600 dark:text-teal-300 dark:border-teal-700';
-      case 'imaging':
-        return 'border-indigo-400 text-indigo-600 dark:text-indigo-300 dark:border-indigo-700';
-      case 'note':
-        return 'border-surface-400 text-surface-600 dark:text-surface-300 dark:border-surface-600';
-      default:
-        return 'border-surface-300 text-surface-600 dark:text-surface-400 dark:border-surface-700';
-    }
-  };
-
-  // Group records by date
-  const groupRecordsByDate = () => {
-    const groupedRecords = {};
+    const typeColors = {
+      'medication': 'bg-orange-100 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400',
+      'visit': 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400',
+      'lab': 'bg-purple-100 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400',
+      'procedure': 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400',
+      'imaging': 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400'
+    };
     
-    records.forEach(record => {
-      const formattedDate = format(parseISO(record.date), 'yyyy-MM-dd');
-      if (!groupedRecords[formattedDate]) {
-        groupedRecords[formattedDate] = [];
-      }
-      groupedRecords[formattedDate].push(record);
-    });
-    
-    return Object.entries(groupedRecords)
-      .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA))
-      .map(([date, records]) => ({
-        date,
-        displayDate: format(parseISO(date), 'MMMM d, yyyy'),
-        records
-      }));
+    return typeColors[type] || 'bg-gray-100 text-gray-600 dark:bg-gray-900/20 dark:text-gray-400';
   };
-
-  const groupedRecords = groupRecordsByDate();
-
+  
+  // Format record date
+  const formatRecordDate = (dateString) => {
+    const date = new Date(dateString);
+    return format(date, 'MMM dd, yyyy • h:mm a');
+  };
+  
+  // Loading state
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      <div className="flex justify-center items-center py-10">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <span className="ml-2 text-surface-600 dark:text-surface-400">Loading medical records...</span>
       </div>
     );
   }
-
-  if (records.length === 0) {
+  
+  // Empty state
+  if (!records || records.length === 0) {
     return (
-      <div className="text-center py-10">
-        <div className="inline-flex items-center justify-center bg-surface-100 dark:bg-surface-800 rounded-full p-3 mb-4">
-          {getIcon('file-text')({ className: "w-6 h-6 text-surface-500" })}
-        </div>
-        <h3 className="text-lg font-medium text-surface-700 dark:text-surface-300">No Records Found</h3>
-        <p className="text-surface-500 dark:text-surface-400 mt-1">There are no medical records matching your criteria.</p>
+      <div className="flex flex-col items-center justify-center py-10">
+        <StethoscopeIcon className="w-12 h-12 text-surface-400 mb-4" />
+        <h2 className="text-xl font-semibold text-surface-700 dark:text-surface-300 mb-2">No Medical Records</h2>
+        <p className="text-surface-600 dark:text-surface-400 text-center max-w-md">
+          There are no medical records available for this patient.
+        </p>
       </div>
     );
   }
-
+  
   return (
-    <div className="relative pb-6">
+    <div className="divide-y divide-surface-200 dark:divide-surface-700">
       {groupedRecords.map((group, groupIndex) => (
-        <div key={group.date} className="mb-6">
-          <div className="sticky top-0 bg-white dark:bg-surface-800 z-10 py-2 border-b border-surface-200 dark:border-surface-700 mb-3">
-            <h3 className="text-md font-medium text-surface-700 dark:text-surface-300">{group.displayDate}</h3>
-          </div>
+        <div key={groupIndex} className="py-4">
+          <h3 className="text-lg font-medium text-surface-700 dark:text-surface-300 mb-4">{group.label}</h3>
           
-          <div className="space-y-3">
-            {group.records.map((record) => {
-              const IconComponent = getRecordIcon(record.type);
-              return (
-                <div 
-                  key={record.id} 
-                  className="flex items-start p-3 rounded-lg border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 cursor-pointer transition-colors"
-                  onClick={() => onViewRecord(record)}
-                >
-                  <div className={`flex-shrink-0 w-10 h-10 rounded-full border-2 ${getTypeColor(record.type)} flex items-center justify-center mr-3`}>
-                    <IconComponent className="w-5 h-5" />
+          <div className="relative">
+            {/* Timeline line */}
+            <div className="absolute left-3.5 top-0 h-full w-0.5 bg-surface-200 dark:bg-surface-700"></div>
+            
+            {/* Records */}
+            <div className="space-y-4">
+              {group.items.map((record, index) => (
+                <div key={index} className="relative pl-10">
+                  {/* Timeline dot */}
+                  <div className={`absolute left-0 top-1.5 h-7 w-7 rounded-full flex items-center justify-center ${getTypeColor(record.type)}`}>
+                    {getRecordIcon(record.type)}
                   </div>
-                  <div className="flex-grow">
-                    <h4 className="font-medium text-surface-800 dark:text-surface-200">{record.title}</h4>
-                    <p className="text-sm text-surface-600 dark:text-surface-400 truncate">{record.description}</p>
-                    <p className="text-xs text-surface-500 dark:text-surface-500 mt-1">Provider: {record.provider} · {format(parseISO(record.date), 'h:mm a')}</p>
+                  
+                  {/* Record card */}
+                  <div 
+                    className="bg-white dark:bg-surface-800 p-4 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => onViewRecord(record)}
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="text-base font-medium">{record.title}</h4>
+                      <span className={`text-xs px-2 py-0.5 rounded ${getTypeColor(record.type)}`}>
+                        {record.type.charAt(0).toUpperCase() + record.type.slice(1)}
+                      </span>
+                    </div>
+                    
+                    <p className="text-sm text-surface-600 dark:text-surface-400 line-clamp-2 mb-2">
+                      {record.description}
+                    </p>
+                    
+                    <div className="flex justify-between items-center text-xs text-surface-500 dark:text-surface-500">
+                      <span>{formatRecordDate(record.date)}</span>
+                      <span>{record.provider}</span>
+                    </div>
                   </div>
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
         </div>
       ))}

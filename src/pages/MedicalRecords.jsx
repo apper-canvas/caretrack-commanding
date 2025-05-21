@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { getIcon } from '../utils/iconUtils.js';
 import TimelineView from '../components/medicalRecords/TimelineView';
 import RecordDetail from '../components/medicalRecords/RecordDetail';
-import { getMedicalRecordsByPatientId } from '../data/mockMedicalRecordsData';
+import { getMedicalRecords } from '../services/medicalRecordService';
 
 const MedicalRecords = () => {
   // Icons
@@ -41,22 +41,20 @@ const MedicalRecords = () => {
       setLoading(true);
       try {
         if (activePatient) {
-          // Simulate API call with setTimeout
-          setTimeout(() => {
-            const records = getMedicalRecordsByPatientId(activePatient.id);
-            setMedicalRecords(records);
-            setFilteredRecords(records);
-            setLoading(false);
-          }, 500);
+          // Real API call to fetch medical records
+          const records = await getMedicalRecords({
+            patientId: activePatient.id
+          });
+          setMedicalRecords(records);
+          setFilteredRecords(records);
         } else {
           setMedicalRecords([]);
           setFilteredRecords([]);
-          setLoading(false);
         }
       } catch (error) {
         toast.error('Failed to load medical records');
-        setLoading(false);
       }
+      setLoading(false);
     };
 
     fetchMedicalRecords();

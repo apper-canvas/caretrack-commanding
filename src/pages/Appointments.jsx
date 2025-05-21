@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
-import { mockAppointments, appointmentTypes } from '../data/mockAppointmentsData';
+import { getAppointments, createAppointment } from '../services/appointmentService';
+import { getAppointmentTypes } from '../services/appointmentTypeService';
+import { getAppointmentStatuses } from '../services/appointmentStatusService';
+import { getProviders } from '../services/providerService';
 import CalendarView from '../components/appointments/CalendarView';
 import ListView from '../components/appointments/ListView';
 import MainFeature from '../components/MainFeature';
@@ -13,6 +16,11 @@ const Appointments = () => {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [showAppointmentDetails, setShowAppointmentDetails] = useState(false);
   const [showAppointmentForm, setShowAppointmentForm] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [appointmentTypes, setAppointmentTypes] = useState([]);
+  const [appointmentStatuses, setAppointmentStatuses] = useState([]);
+  const [providers, setProviders] = useState([]);
+  const [showAppointmentForm, setShowAppointmentForm] = useState(false);
   
   // Get icons
   const CalendarIcon = getIcon('calendar');
@@ -21,10 +29,33 @@ const Appointments = () => {
   const XIcon = getIcon('x');
   const FileTextIcon = getIcon('file-text');
   
-  // Load appointments from mock data
+  // Load appointments and reference data
   useEffect(() => {
-    // In a real app, this would be an API call
-    setAppointments(mockAppointments);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Fetch appointments
+        const appointmentsData = await getAppointments();
+        setAppointments(appointmentsData);
+        
+        // Fetch reference data
+        const [typesData, statusesData, providersData] = await Promise.all([
+          getAppointmentTypes(),
+          getAppointmentStatuses(),
+          getProviders()
+        ]);
+        
+        setAppointmentTypes(typesData);
+        setAppointmentStatuses(statusesData);
+        setProviders(providersData);
+      } catch (error) {
+        console.error("Failed to fetch appointments data:", error);
+        toast.error("Failed to load appointments");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
   
   // Handle appointment click
@@ -42,9 +73,10 @@ const Appointments = () => {
   const handleScheduleSuccess = () => {
     toast.success("Appointment scheduled successfully!");
     setShowAppointmentForm(false);
+    // Refresh appointments
+    getAppointments().then(data => setAppointments(data));
   };
   
-  // Handle add new appointment
   const handleAddAppointment = () => {
     setShowAppointmentForm(true);
   };
@@ -106,16 +138,25 @@ const Appointments = () => {
         
         {/* View content */}
         <div className="bg-white dark:bg-surface-800 rounded-lg shadow-sm p-4 md:p-6 border border-surface-200 dark:border-surface-700">
-          {activeView === 'calendar' ? (
-            <CalendarView 
-              appointments={appointments} 
-              onAppointmentClick={handleAppointmentClick}
-            />
+          {loading ? (
+            <div className="flex justify-center items-center p-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <span className="ml-2 text-surface-600 dark:text-surface-400">Loading appointments...</span>
+            </div>
           ) : (
-            <ListView 
-              appointments={appointments} 
-              onAppointmentClick={handleAppointmentClick}
-            />
+            <>
+              {activeView === 'calendar' ? (
+                <CalendarView 
+                  appointments={appointments} 
+                  onAppointmentClick={handleAppointmentClick}
+                />
+              ) : (
+                <ListView 
+                  appointments={appointments} 
+                  onAppointmentClick={handleAppointmentClick}
+                />
+              )}
+            </>
           )}
         </div>
         

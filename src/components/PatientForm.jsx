@@ -7,7 +7,7 @@ import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
  * @param {Function} onCancel - Function to call when form is cancelled
  */
 const PatientForm = forwardRef(({ patient, onSubmitForm, onCancel }, ref) => {
-  const isEdit = !!patient;
+  const isEdit = !!patient && !!patient.id;
 
   
   const [formData, setFormData] = useState({
@@ -99,16 +99,19 @@ const PatientForm = forwardRef(({ patient, onSubmitForm, onCancel }, ref) => {
       const processedData = {
         ...formData,
         medicalConditions: formData.medicalConditions ? formData.medicalConditions.split(',').map(item => item.trim()) : [],
-        allergies: formData.allergies ? formData.allergies.split(',').map(item => item.trim()) : []
+        allergies: formData.allergies ? formData.allergies.split(',').map(item => item.trim()) : [],
+        Name: `${formData.firstName} ${formData.lastName}` // Add required Name field
       };
       
       if (isEdit) {
         // If editing, preserve the ID
-        processedData.id = patient.id;
+        processedData.Id = patient.id;
       } else {
-        // If adding new, generate a temporary ID (this would be handled by the backend in real app)
-        processedData.id = Date.now();
+        // For new patients, add current date as last visit
         processedData.lastVisit = new Date().toISOString().split('T')[0];
+        
+        // No need to generate an ID, the backend will handle this
+        // processedData.id = Date.now();
       }
       
       onSubmitForm(processedData);

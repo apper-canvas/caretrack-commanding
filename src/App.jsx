@@ -213,7 +213,9 @@ const Header = () => {
                 onClick={toggleDarkMode}
                 className="p-2 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
                 aria-label="Toggle dark mode"
+              >
                 {darkMode ? <SunIcon className="h-5 w-5 text-yellow-400" /> : <MoonIcon className="h-5 w-5 text-surface-600" />}
+              </button>
               </button>
             </div>
           </nav>
@@ -226,7 +228,7 @@ const Header = () => {
 const Footer = () => {
   const HeartIcon = getIcon('heart');
   return (
-    <footer className="mt-auto py-4 md:py-6 bg-white dark:bg-surface-800 border-t border-surface-200 dark:border-surface-700">
+    <footer className="py-4 md:py-6 bg-white dark:bg-surface-800 border-t border-surface-200 dark:border-surface-700">
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
@@ -243,33 +245,20 @@ const Footer = () => {
         </div>
       </div>
     </footer>
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   );
-    <div className="min-h-screen flex flex-col bg-surface-50 dark:bg-surface-900 relative">
+};
 
 function App() {
-      <main className="flex-grow flex flex-col md:flex-row relative">
-    <div className="min-h-screen flex flex-col bg-surface-50 dark:bg-surface-900">
+  return (
+    <div className="min-h-screen flex flex-col bg-surface-50 dark:bg-surface-900 relative">
       <Header />
+      <main className="flex-grow flex flex-col md:flex-row relative">
+        <SidePanel />
         <div className="flex-1 overflow-auto p-4 md:p-6">
           <AnimatePresence mode="wait">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/patients/*" element={<Patients />} />
-              <Route path="/appointments" element={<NotFound />} />
-              <Route path="/records" element={<NotFound />} />
-              <Route path="/settings" element={<NotFound />} />
-              <Route path="*" element={<NotFound />} />
               <Route path="/appointments" element={<NotFound />} />
               <Route path="/records" element={<NotFound />} />
               <Route path="/settings" element={<NotFound />} />

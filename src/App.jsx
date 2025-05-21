@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+import { useSelector } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
 import { AnimatePresence } from 'framer-motion';
 
@@ -12,6 +13,7 @@ import Patients from './pages/Patients';
 
 // Components
 import { getIcon } from './utils/iconUtils.js';
+import PatientContextBanner from './components/PatientContextBanner';
 
 // Navigation items configuration
 const NavItems = [
@@ -247,12 +249,15 @@ const Footer = () => {
 };
 
 function App() {
+  const activePatient = useSelector(state => state.patient.activePatient);
+  
   return (
     <div className="min-h-screen flex flex-col bg-surface-50 dark:bg-surface-900 relative">
       <Header />
       <main className="flex-grow flex flex-col md:flex-row relative">
         <SidePanel />
         <div className="flex-1 overflow-auto p-4 md:p-6">
+          {activePatient && <PatientContextBanner />}
           <AnimatePresence mode="wait">
             <Routes>
               <Route path="/" element={<Home />} />

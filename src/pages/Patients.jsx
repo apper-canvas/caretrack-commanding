@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { getIcon } from '../utils/iconUtils.js';
 import PatientForm from '../components/PatientForm';
+import { setActivePatient, updateActivePatient, clearActivePatient } from '../store/patientSlice';
 import { patients, calculateAge } from '../data/mockData';
 
 const Patients = () => {
@@ -15,6 +17,7 @@ const Patients = () => {
   const EyeIcon = getIcon('eye');
   const UserPlusIcon = getIcon('user-plus');
   const XIcon = getIcon('x');
+  const UserCheckIcon = getIcon('user-check');
 
   // States
   const [patientList, setPatientList] = useState([]);
@@ -36,6 +39,10 @@ const Patients = () => {
   // Sort states
   const [sortField, setSortField] = useState('lastName');
   const [sortDirection, setSortDirection] = useState('asc');
+
+  // Redux
+  const dispatch = useDispatch();
+  const activePatient = useSelector(state => state.patient.activePatient);
 
   // Initialize patient data
   useEffect(() => {
@@ -125,6 +132,8 @@ const Patients = () => {
         patient.id === patientData.id ? patientData : patient
       )
     );
+    // Update the active patient in context if it's being edited
+    if (activePatient && activePatient.id === patientData.id) dispatch(updateActivePatient(patientData));
     setIsEditModalOpen(false);
     toast.success(`Patient ${patientData.firstName} ${patientData.lastName} has been updated!`);
   };
@@ -137,6 +146,8 @@ const Patients = () => {
         prevList.filter(patient => patient.id !== currentPatient.id)
       );
       setIsDeleteModalOpen(false);
+      // Clear the active patient if it's the one being deleted
+      if (activePatient && activePatient.id === currentPatient.id) dispatch(clearActivePatient());
       toast.success(`Patient ${currentPatient.firstName} ${currentPatient.lastName} has been deleted!`);
       setCurrentPatient(null);
     }
@@ -146,6 +157,7 @@ const Patients = () => {
   const openViewModal = (patient) => {
     setCurrentPatient(patient);
     setIsViewModalOpen(true);
+    dispatch(setActivePatient(patient));
   };
 
   // Open edit patient modal
@@ -160,6 +172,13 @@ const Patients = () => {
     setIsDeleteModalOpen(true);
   };
 
+  // Set active patient context
+  const handleSetActivePatient = (patient) => {
+    dispatch(setActivePatient(patient));
+    toast.info(`${patient.firstName} ${patient.lastName} set as active patient`);
+  };
+
+  // Page transition animation
   // Page transition animation
   const pageVariants = {
     initial: { opacity: 0, y: 10 },
@@ -326,12 +345,21 @@ const Patients = () => {
                     <td className="px-4 py-4 whitespace-nowrap text-right text-sm">
                       <div className="flex justify-end space-x-2">
                         <button 
+                          onClick={() => handleSetActivePatient(patient)}
+                          className={`p-1.5 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 ${activePatient && activePatient.id === patient.id ? 'text-primary dark:text-primary-light bg-primary-light/20 dark:bg-primary-dark/20' : 'text-surface-600 dark:text-surface-400'}`}
+                          title={activePatient && activePatient.id === patient.id ? "Active patient context" : "Set as active patient"}
+                          disabled={activePatient && activePatient.id === patient.id}
+                        >
+                          <UserCheckIcon className="w-4 h-4" />
+                        </button>
+                        <button 
                           onClick={() => openViewModal(patient)}
                           className="p-1.5 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-400"
                           title="View patient details"
                         >
                           <EyeIcon className="w-4 h-4" />
                         </button>
+                        
                         <button 
                           onClick={() => openEditModal(patient)}
                           className="p-1.5 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-400"
@@ -442,6 +470,7 @@ const Patients = () => {
               <button className="btn btn-primary" onClick={() => { setIsViewModalOpen(false); openEditModal(currentPatient); }}>Edit Patient</button>
             </div>
           </div>
+          
         </div>
       )}
       

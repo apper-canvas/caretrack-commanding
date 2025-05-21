@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { getIcon } from '../utils/iconUtils.js';
 import MainFeature from '../components/MainFeature';
+import { Link } from 'react-router-dom';
 
 // Mock data for patient dashboard
 const patientStats = [
@@ -67,6 +69,7 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [displayedPatients, setDisplayedPatients] = useState(recentPatients);
   const SearchIcon = getIcon('search');
+  const UserIcon = getIcon('user');
   const UserPlusIcon = getIcon('user-plus');
   const FileTextIcon = getIcon('file-text');
   
@@ -98,6 +101,9 @@ const Home = () => {
     }, 1500);
   };
 
+  // Redux
+  const activePatient = useSelector(state => state.patient.activePatient);
+
   return (
     <div className="container mx-auto px-4 py-6">
       <motion.div 
@@ -106,12 +112,31 @@ const Home = () => {
         transition={{ duration: 0.5 }}
       >
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl md:text-3xl font-bold text-surface-800 dark:text-surface-100">Healthcare Dashboard</h1>
             <p className="mt-1 text-surface-500 dark:text-surface-400">Welcome back, view your patient overview</p>
           </div>
           
-          <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-3">
+          <div className="mt-4 md:mt-0 flex flex-wrap items-center justify-end gap-3">
+            {activePatient && (
+              <div className="flex items-center">
+                <div className="relative">
+                  <div className="w-full flex items-center px-4 py-2 rounded-lg bg-primary-light/10 dark:bg-primary-dark/10 border border-primary/20">
+                    <UserIcon className="h-5 w-5 text-primary dark:text-primary-light mr-2" />
+                    <span className="text-sm font-medium text-primary dark:text-primary-light">
+                      Working with:
+                    </span>
+                    <span className="ml-2 text-sm text-surface-700 dark:text-surface-300">
+                      {activePatient.firstName} {activePatient.lastName}
+                    </span>
+                    <Link to="/patients" className="ml-2 text-xs text-primary underline">
+                      View
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <button 
               onClick={handleQuickAdd}
               className="btn bg-primary hover:bg-primary-dark text-white flex items-center justify-center"

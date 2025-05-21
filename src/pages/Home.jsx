@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
+import MainFeature from '../components/MainFeature.jsx';
 import { toast } from 'react-toastify';
 import { getIcon } from '../utils/iconUtils.js';
 import { Link } from 'react-router-dom';

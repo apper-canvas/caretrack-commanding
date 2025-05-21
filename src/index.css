@@ -77,10 +77,22 @@
   
   .side-nav-link {
     @apply flex items-center gap-3 px-4 py-3 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 transition-all duration-200;
+    position: relative;
   }
   
   .side-nav-link.active {
     @apply bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-light font-medium;
+  }
+  
+  .side-nav-link.active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 25%;
+    bottom: 25%;
+    width: 3px;
+    background-color: currentColor;
+    border-radius: 0 2px 2px 0;
   }
 
   .badge {

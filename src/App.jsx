@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { AnimatePresence } from 'framer-motion';
 
 // Pages
+// Pages
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import Patients from './pages/Patients';
@@ -12,16 +13,45 @@ import Patients from './pages/Patients';
 // Components
 import { getIcon } from './utils/iconUtils.js';
 
+// Navigation items configuration
+const NavItems = [
+  { 
+    name: "Dashboard", 
+    path: "/", 
+    icon: "home",
+    description: "Overview of patient statistics and activity" 
+  },
+  { 
+    name: "Patients", 
+    path: "/patients", 
+    icon: "users",
+    description: "Manage patient records and information" 
+  },
+  { 
+    name: "Appointments", 
+    path: "/appointments", 
+    icon: "calendar",
+    description: "Schedule and manage appointments" 
+  },
+  { 
+    name: "Medical Records", 
+    path: "/records", 
+    icon: "file-text",
+    description: "Access and update patient medical records" 
+  },
+  { 
+    name: "Settings", 
+    path: "/settings", 
+    icon: "settings",
+    description: "Configure application preferences" 
+  }
+];
+
 const SidePanel = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(true);
   
   // Icons
-  const HomeIcon = getIcon('home');
-  const UsersIcon = getIcon('users');
-  const CalendarIcon = getIcon('calendar');
-  const FileTextIcon = getIcon('file-text');
-  const SettingsIcon = getIcon('settings');
   const ChevronLeftIcon = getIcon('chevron-left');
   const ChevronRightIcon = getIcon('chevron-right');
   
@@ -40,27 +70,22 @@ const SidePanel = () => {
         </button>
       </div>
       
-      <nav className="p-4">
+      <nav className="p-4" aria-label="Main navigation">
         <ul className="space-y-2">
-          <li>
-            <Link to="/" className={`side-nav-link ${location.pathname === '/' ? 'active' : ''}`}>
-              <HomeIcon className="h-5 w-5" />
-              {isOpen && <span>Dashboard</span>}
-            </Link>
-          </li>
-          <li>
-            <Link to="/patients" className={`side-nav-link ${location.pathname === '/patients' ? 'active' : ''}`}>
-              <UsersIcon className="h-5 w-5" />
-              {isOpen && <span>Patients</span>}
-            </Link>
-          </li>
-          <li>
-            <Link to="/appointments" className={`side-nav-link ${location.pathname === '/appointments' ? 'active' : ''}`}>
-              <CalendarIcon className="h-5 w-5" />
-              {isOpen && <span>Appointments</span>}
-            </Link>
-          </li>
-         
+          {NavItems.map((item) => {
+            const IconComponent = getIcon(item.icon);
+            const isActive = location.pathname === item.path || 
+                            (item.path !== '/' && location.pathname.startsWith(item.path));
+            
+            return (
+              <li key={item.path}>
+                <Link to={item.path} className={`side-nav-link ${isActive ? 'active' : ''}`} aria-current={isActive ? 'page' : undefined} title={!isOpen ? item.name : undefined}>
+                  <IconComponent className="h-5 w-5" aria-hidden="true" />
+                  {isOpen && <span>{item.name}</span>}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
     </div>
@@ -204,7 +229,10 @@ function App() {
           <AnimatePresence mode="wait">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/patients" element={<Patients />} />
+              <Route path="/patients/*" element={<Patients />} />
+              <Route path="/appointments" element={<NotFound />} />
+              <Route path="/records" element={<NotFound />} />
+              <Route path="/settings" element={<NotFound />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AnimatePresence>

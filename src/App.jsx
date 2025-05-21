@@ -48,12 +48,6 @@ const NavItems = [
     name: "Help", 
     path: "/help", 
     icon: "help-circle",
-    description: "User guides, FAQs and troubleshooting" 
-  },
-  { 
-    name: "Settings", 
-    path: "/settings", 
-    icon: "settings",
     description: "Configure application preferences" 
   }
 ];
@@ -274,7 +268,6 @@ function App() {
               <Route path="/appointments" element={<Appointments />} />
               <Route path="/records" element={<MedicalRecords />} />
               <Route path="/help/*" element={<Help />} />
-              <Route path="/settings" element={<NotFound />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AnimatePresence>

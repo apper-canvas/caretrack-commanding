@@ -11,6 +11,7 @@ import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import Patients from './pages/Patients';
 import Appointments from './pages/Appointments';
+import Help from './pages/Help';
 import MedicalRecords from './pages/MedicalRecords';
 
 // Components
@@ -42,6 +43,12 @@ const NavItems = [
     path: "/records", 
     icon: "file-text",
     description: "Access and update patient medical records" 
+  },
+  { 
+    name: "Help", 
+    path: "/help", 
+    icon: "help-circle",
+    description: "User guides, FAQs and troubleshooting" 
   },
   { 
     name: "Settings", 
@@ -266,6 +273,7 @@ function App() {
               <Route path="/patients/*" element={<Patients />} />
               <Route path="/appointments" element={<Appointments />} />
               <Route path="/records" element={<MedicalRecords />} />
+              <Route path="/help/*" element={<Help />} />
               <Route path="/settings" element={<NotFound />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

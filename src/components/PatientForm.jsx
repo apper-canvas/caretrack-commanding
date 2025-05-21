@@ -1,4 +1,5 @@
 import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { toast } from 'react-toastify';
 
 /**
  * Reusable PatientForm component for both adding and editing patient information
@@ -92,6 +93,7 @@ const PatientForm = forwardRef(({ patient, onSubmitForm, onCancel }, ref) => {
   const handleSubmit = () => {
     if (!onSubmitForm) {
       console.error('No onSubmitForm handler provided to PatientForm');
+      toast.error('Form submission error: No submit handler configured');
       return;
     }
     if (validateForm()) {

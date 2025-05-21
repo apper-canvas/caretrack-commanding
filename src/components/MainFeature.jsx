@@ -151,9 +151,10 @@ const MainFeature = ({ onScheduleSuccess }) => {
   
   // Handle patient form submission from the modal
   const handlePatientFormSubmit = () => {
-    // Check if the form is valid
-    if (!patientFormRef.current || !patientFormRef.current.checkValidity()) {
-      return;
+    // Check if the form ref exists and the form is valid
+    if (!patientFormRef.current) return;
+    if (!patientFormRef.current.checkValidity()) {
+      return; // Form is invalid, don't proceed
     }
     
     // Get form data from the PatientForm component
@@ -331,8 +332,8 @@ const MainFeature = ({ onScheduleSuccess }) => {
                       </div>
                       <PatientForm 
                         ref={patientFormRef}
-                        onSubmitForm={handlePatientFormSubmit} 
-                        onCancel={handlePatientFormCancel}
+                        onSubmitForm={(data) => { setFormData(prev => ({ ...prev, ...data })); handlePatientFormSubmit(); }} 
+                        onCancel={handlePatientFormCancel} 
                         modalMode={true}
                       />
                     </div>

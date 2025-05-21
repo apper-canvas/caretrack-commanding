@@ -10,7 +10,7 @@ import NotFound from './pages/NotFound';
 import Patients from './pages/Patients';
 
 // Components
-import { getIcon } from './utils/iconUtils';
+import { getIcon } from './utils/iconUtils.jsx';
 
 const Header = () => {
   const [darkMode, setDarkMode] = useState(false);

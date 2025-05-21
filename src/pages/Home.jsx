@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
-import { getIcon } from '../utils/iconUtils';
+import { getIcon } from '../utils/iconUtils.jsx';
 import MainFeature from '../components/MainFeature';
 
 // Mock data for patient dashboard

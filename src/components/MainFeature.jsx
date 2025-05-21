@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
-import { getIcon } from '../utils/iconUtils';
+import { getIcon } from '../utils/iconUtils.jsx';
 
 // Mock data for patient types
 const patientTypes = ["Emergency", "Outpatient", "Inpatient", "Specialist Referral"];

@@ -216,7 +216,6 @@ const Header = () => {
               >
                 {darkMode ? <SunIcon className="h-5 w-5 text-yellow-400" /> : <MoonIcon className="h-5 w-5 text-surface-600" />}
               </button>
-              </button>
             </div>
           </nav>
         </div>

@@ -299,7 +299,6 @@ const MainFeature = ({ onScheduleSuccess }) => {
                       />
                     </div>
                   </div>
-                </div>
                 
                 <div>
                   <label htmlFor="dateOfBirth" className="form-label">

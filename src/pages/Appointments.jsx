@@ -198,7 +198,7 @@ const Appointments = () => {
               </div>
             </div>
         )}
-        ))}
+        )}
         
         {/* New Appointment Modal */}
         {showAppointmentForm && (

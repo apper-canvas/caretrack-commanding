@@ -18,6 +18,13 @@ import Signup from './pages/Signup';
 import Callback from './pages/Callback';
 import ErrorPage from './pages/ErrorPage';
 
+// Admin pages
+import AdminDashboard from './pages/AdminDashboard';
+import ManagePatients from './pages/admin/ManagePatients';
+import ManageProviders from './pages/admin/ManageProviders';
+import ManageAppointmentTypes from './pages/admin/ManageAppointmentTypes';
+import ManageAppointmentStatuses from './pages/admin/ManageAppointmentStatuses';
+
 // Components
 import { getIcon } from './utils/iconUtils.js';
 import MainFeature from './components/MainFeature';
@@ -55,6 +62,12 @@ const NavItems = [
     path: "/help", 
     icon: "help-circle",
     description: "Configure application preferences" 
+  },
+  { 
+    name: "Administration", 
+    path: "/admin", 
+    icon: "settings",
+    description: "Manage system settings and data" 
   }
 ];
 
@@ -377,6 +390,11 @@ function App() {
               <Route path="/appointments" element={isAuthenticated ? <Appointments /> : <Login />} />
               <Route path="/records" element={isAuthenticated ? <MedicalRecords /> : <Login />} />
               <Route path="/help/*" element={isAuthenticated ? <Help /> : <Login />} />
+              <Route path="/admin" element={isAuthenticated ? <AdminDashboard /> : <Login />} />
+              <Route path="/admin/patients" element={isAuthenticated ? <ManagePatients /> : <Login />} />
+              <Route path="/admin/providers" element={isAuthenticated ? <ManageProviders /> : <Login />} />
+              <Route path="/admin/appointment-types" element={isAuthenticated ? <ManageAppointmentTypes /> : <Login />} />
+              <Route path="/admin/appointment-statuses" element={isAuthenticated ? <ManageAppointmentStatuses /> : <Login />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AnimatePresence>

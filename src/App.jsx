@@ -202,21 +202,20 @@ const Header = () => {
               </div>
               <input type="search" className="w-full pl-10 pr-4 py-2 rounded-lg border border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 text-surface-700 dark:text-surface-300 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Search across all modules..." aria-label="Search" />
             </div>
-              <div className="flex items-center space-x-2">
-                <div className="h-8 w-8 bg-surface-200 dark:bg-surface-700 rounded-full flex items-center justify-center">
-                  <UserIcon className="h-5 w-5 text-surface-600 dark:text-surface-300" />
-                </div>
-                <span className="text-surface-600 dark:text-surface-300">User</span>
+            <div className="flex items-center space-x-2">
+              <div className="h-8 w-8 bg-surface-200 dark:bg-surface-700 rounded-full flex items-center justify-center">
+                <UserIcon className="h-5 w-5 text-surface-600 dark:text-surface-300" />
               </div>
-              
-              <button 
-                onClick={toggleDarkMode}
-                className="p-2 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
-                aria-label="Toggle dark mode"
-              >
-                {darkMode ? <SunIcon className="h-5 w-5 text-yellow-400" /> : <MoonIcon className="h-5 w-5 text-surface-600" />}
-              </button>
+              <span className="text-surface-600 dark:text-surface-300">User</span>
             </div>
+            
+            <button 
+              onClick={toggleDarkMode}
+              className="p-2 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
+              aria-label="Toggle dark mode"
+            >
+              {darkMode ? <SunIcon className="h-5 w-5 text-yellow-400" /> : <MoonIcon className="h-5 w-5 text-surface-600" />}
+            </button>
           </nav>
         </div>
       )}

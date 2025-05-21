@@ -221,7 +221,6 @@ const Appointments = () => {
             </motion.div>
           </div>
         )}
-        )}
       </motion.div>
     </div>
   );

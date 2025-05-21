@@ -10,6 +10,7 @@ import { AnimatePresence } from 'framer-motion';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import Patients from './pages/Patients';
+import Appointments from './pages/Appointments';
 
 // Components
 import { getIcon } from './utils/iconUtils.js';
@@ -262,7 +263,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/patients/*" element={<Patients />} />
-              <Route path="/appointments" element={<NotFound />} />
+              <Route path="/appointments" element={<Appointments />} />
               <Route path="/records" element={<NotFound />} />
               <Route path="/settings" element={<NotFound />} />
               <Route path="*" element={<NotFound />} />

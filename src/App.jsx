@@ -11,6 +11,7 @@ import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import Patients from './pages/Patients';
 import Appointments from './pages/Appointments';
+import MedicalRecords from './pages/MedicalRecords';
 
 // Components
 import { getIcon } from './utils/iconUtils.js';
@@ -264,7 +265,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/patients/*" element={<Patients />} />
               <Route path="/appointments" element={<Appointments />} />
-              <Route path="/records" element={<NotFound />} />
+              <Route path="/records" element={<MedicalRecords />} />
               <Route path="/settings" element={<NotFound />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

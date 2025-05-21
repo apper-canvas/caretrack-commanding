@@ -1,5 +1,7 @@
 import { User, Moon, Sun, Menu, Heart, ArrowRight, Clock, Calendar, FileText, BarChart, Activity, DollarSign, 
-  Users, Building, ChevronRight, Check, X as XIcon, AlertCircle, InfoIcon, Search, Plus, Edit, Trash2, Filter, Eye, UserPlus } from 'lucide-react';
+  Users, Building, ChevronRight, Check, X as XIcon, AlertCircle, InfoIcon, Search, Plus, Edit, Trash2, Filter, Eye, UserPlus,
+  Stethoscope, Flask, Pill, Scissors, Shield, Scan, List, Share, Download, Save, Printer, UserCheck, ChevronLeft, 
+  File, ShieldAlert, Bookmark } from 'lucide-react';
 
 // Map of icon names to their components
 const iconMapping = {
@@ -28,7 +30,26 @@ const iconMapping = {
   'trash2': Trash2,
   'filter': Filter,
   'eye': Eye,
-  'userplus': UserPlus
+  'userplus': UserPlus,
+  'stethoscope': Stethoscope,
+  'flask': Flask,
+  'pill': Pill,
+  'scissors': Scissors,
+  'shield': Shield,
+  'scan': Scan,
+  'list': List,
+  'share': Share,
+  'download': Download,
+  'save': Save,
+  'printer': Printer,
+  'usercheck': UserCheck,
+  'chevronleft': ChevronLeft,
+  'file': File,
+  'shieldalert': ShieldAlert,
+  'bookmark': Bookmark,
+  'alert-circle': AlertCircle,
+  'file-text': FileText,
+  'user-check': UserCheck
 };
 
 export const getIcon = (iconName) => {

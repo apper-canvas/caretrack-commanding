@@ -1,64 +1,84 @@
 import { User, Moon, Sun, Menu, Heart, ArrowRight, Clock, Calendar, FileText, BarChart, Activity, DollarSign, 
   Users, Building, ChevronRight, Check, X as XIcon, AlertCircle, InfoIcon, Search, Plus, Edit, Trash2, Filter, Eye, UserPlus } from 'lucide-react';
 
+// Map of icon names to their components
+const iconMapping = {
+  'user': User,
+  'moon': Moon,
+  'sun': Sun,
+  'menu': Menu,
+  'heart': Heart,
+  'arrowright': ArrowRight,
+  'clock': Clock,
+  'calendar': Calendar,
+  'filetext': FileText,
+  'barchart': BarChart,
+  'activity': Activity,
+  'dollarsign': DollarSign,
+  'users': Users,
+  'building': Building,
+  'chevronright': ChevronRight,
+  'check': Check,
+  'xicon': XIcon,
+  'alertcircle': AlertCircle,
+  'infoicon': InfoIcon,
+  'search': Search,
+  'plus': Plus,
+  'edit': Edit,
+  'trash2': Trash2,
+  'filter': Filter,
+  'eye': Eye,
+  'userplus': UserPlus
+};
+
 export const getIcon = (iconName) => {
   // Handle null/undefined case
   if (!iconName) {
     console.warn('No icon name provided, using Smile as fallback');
-    return LucideIcons.Smile;
+    return User; // Using User as fallback instead of Smile which isn't imported
   }
 
-  // Step 1: Try direct match first (if already PascalCase)
-  if (LucideIcons[iconName] && typeof LucideIcons[iconName] === 'function') {
-    return LucideIcons[iconName];
+  // Try direct match first using our iconMapping
+  if (iconMapping[iconName]) {
+    return iconMapping[iconName];
   }
 
-  // Step 2: Handle various transformations from kebab-case to PascalCase
+  // For kebab-case, convert to lowercase without dashes
+  const normalizedIconName = iconName.toLowerCase().replace(/-/g, '');
+  if (iconMapping[normalizedIconName]) {
+    return iconMapping[normalizedIconName];
+  }
+
+  // Handle PascalCase conversion
   let componentName = '';
   if (iconName.includes('-')) {
-    // Handle kebab-case with numbers (bar-chart-2 → BarChart2)
     componentName = iconName
       .split('-')
       .map(part => {
-        // Check if the part is just a number and attach it without capitalization
         if (/^\d+$/.test(part)) {
           return part;
         }
-        // Otherwise capitalize the first letter
         return part.charAt(0).toUpperCase() + part.slice(1);
       })
       .join('');
   } else {
-    // For single word icons, just capitalize first letter
     componentName = iconName.charAt(0).toUpperCase() + iconName.slice(1);
-    'search': Search,
-    'plus': Plus,
-    'edit': Edit,
-    'trash': Trash2,
-    'filter': Filter,
-    'eye': Eye,
-    'user-plus': UserPlus
-
-  // Step 3: Check if we have a valid component after transformation
-  if (LucideIcons[componentName] && typeof LucideIcons[componentName] === 'function') {
-    return LucideIcons[componentName];
   }
-
-  // Step 4: Advanced retry - try various transformations if needed
-  // Try removing spaces and underscores (user_circle → UserCircle)
+  
+  // Try the transformed component name
   const noSpaces = componentName.replace(/[\s_]/g, '');
-  if (LucideIcons[noSpaces] && typeof LucideIcons[noSpaces] === 'function') {
-    return LucideIcons[noSpaces];
+  const lowercaseNoSpaces = noSpaces.toLowerCase();
+  
+  if (iconMapping[lowercaseNoSpaces]) {
+    return iconMapping[lowercaseNoSpaces];
   }
 
-  // Try inserting number without space (barChart2 → BarChart2)
-  const numberPattern = /([A-Za-z])(\d+)$/;
-  const withNumber = componentName.replace(numberPattern, '$1$2');
-  if (LucideIcons[withNumber] && typeof LucideIcons[withNumber] === 'function') {
-    return LucideIcons[withNumber];
+  // Special case for user-plus which becomes userplus
+  if (iconName === 'user-plus') {
+    return UserPlus;
   }
 
   // Fallback with console warning for debugging
   console.warn(`Icon "${iconName}" not found in Lucide (tried "${componentName}"), using Smile instead`);
-  return LucideIcons.Smile;
+  return User; // Using User as fallback
 };

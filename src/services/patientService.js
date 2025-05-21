@@ -136,3 +136,7 @@ export const deletePatient = async (patientId) => {
     throw error;
   }
 };
+
+// Export aliases to match import naming in components
+export const getPatients = fetchPatients;
+export const getPatientById = fetchPatientById;

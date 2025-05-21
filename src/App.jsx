@@ -71,6 +71,7 @@ const Header = () => {
   const [darkMode, setDarkMode] = useState(false);
   const MoonIcon = getIcon('moon');
   const SunIcon = getIcon('sun');
+  const SearchIcon = getIcon('search');
   const MenuIcon = getIcon('menu');
   const UserIcon = getIcon('user');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -102,10 +103,13 @@ const Header = () => {
         </div>
         
         <div className="hidden md:flex items-center space-x-6">
-          <nav className="flex space-x-4">
-            <a href="/" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light">Dashboard</a>
-            <a href="/patients" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light">Patients</a>
-            <a href="/records" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light">Records</a>
+          <nav className="flex items-center">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <SearchIcon className="h-4 w-4 text-surface-500 dark:text-surface-400" />
+              </div>
+              <input type="search" className="pl-10 pr-4 py-2 w-64 rounded-lg border border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 text-surface-700 dark:text-surface-300 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Search..." aria-label="Search" />
+            </div>
          </nav>
           
           <div className="flex items-center space-x-3">
@@ -135,9 +139,12 @@ const Header = () => {
       {isMenuOpen && (
         <div className="md:hidden mt-3 px-4 py-3 bg-white dark:bg-surface-800 border-t dark:border-surface-700">
           <nav className="flex flex-col space-y-3">
-            <a href="/" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light py-2">Dashboard</a>
-            <a href="/patients" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light py-2">Patients</a>
-            <a href="/records" className="text-surface-600 hover:text-primary dark:text-surface-300 dark:hover:text-primary-light py-2">Records</a>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <SearchIcon className="h-4 w-4 text-surface-500 dark:text-surface-400" />
+              </div>
+              <input type="search" className="w-full pl-10 pr-4 py-2 rounded-lg border border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 text-surface-700 dark:text-surface-300 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Search..." aria-label="Search" />
+            </div>
             
             <div className="flex items-center justify-between pt-2 border-t dark:border-surface-700">
               <div className="flex items-center space-x-2">

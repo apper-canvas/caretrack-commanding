@@ -73,7 +73,7 @@ const NavItems = [
 
 export const AuthContext = createContext(null);
 
-const SidePanel = () => {
+const SidePanel = ({ isAuthenticated }) => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -133,7 +133,7 @@ const SidePanel = () => {
   );
 };
 
-const Header = () => {
+const Header = ({ isAuthenticated }) => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
@@ -249,7 +249,7 @@ const Header = () => {
   );
 };
 
-const Footer = () => {
+const Footer = ({ isAuthenticated }) => {
   const HeartIcon = getIcon('heart');
   return (
     <footer className="py-4 md:py-6 bg-white dark:bg-surface-800 border-t border-surface-200 dark:border-surface-700">
@@ -270,6 +270,49 @@ const Footer = () => {
       </div>
     </footer>
   );
+};
+
+// Layout for authenticated users with sidebar and header
+const AuthenticatedLayout = ({ children }) => {
+  const activePatient = useSelector(state => state.patient.activePatient);
+  
+  return (
+    <div className="min-h-screen flex flex-col bg-surface-50 dark:bg-surface-900 relative">
+      <Header isAuthenticated={true} />
+      <main className="flex-grow flex flex-col md:flex-row relative">
+        <SidePanel isAuthenticated={true} />
+        <div className="flex-1 overflow-auto p-4 md:p-6">
+          {activePatient && <PatientContextBanner />}
+          <AnimatePresence mode="wait">
+            {children}
+          </AnimatePresence>
+        </div>
+      </main>
+      <Footer isAuthenticated={true} />
+    </div>
+  );
+};
+
+// Layout for unauthenticated users (login, signup pages)
+const UnauthenticatedLayout = ({ children }) => {
+  return (
+    <div className="min-h-screen flex flex-col bg-surface-50 dark:bg-surface-900">
+      <AnimatePresence mode="wait">
+        {children}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+// Wrapper component that selects the appropriate layout based on the route and auth status
+const AppLayout = ({ children, authRequired, isAuthenticated }) => {
+  if (authRequired && !isAuthenticated) {
+    return <UnauthenticatedLayout>{children}</UnauthenticatedLayout>;
+  }
+  
+  return isAuthenticated 
+    ? <AuthenticatedLayout>{children}</AuthenticatedLayout> 
+    : <UnauthenticatedLayout>{children}</UnauthenticatedLayout>;
 };
 
 function App() {
@@ -370,38 +413,107 @@ function App() {
   if (!isInitialized) {
     return <div className="loading">Initializing application...</div>;
   }
+
+  // Define auth routes - these routes never need the authenticated layout
+  const authRoutes = ['/login', '/signup', '/callback', '/error'];
+  
+  // Helper function to check if the current path is an auth route
+  const isAuthRoute = (path) => {
+    return authRoutes.some(route => path.startsWith(route));
+  };
   
   return (
     <AuthContext.Provider value={authMethods}>
-      <div className="min-h-screen flex flex-col bg-surface-50 dark:bg-surface-900 relative">
-      <Header />
-      <main className="flex-grow flex flex-col md:flex-row relative">
-        <SidePanel />
-        <div className="flex-1 overflow-auto p-4 md:p-6">
-          {activePatient && <PatientContextBanner />}
-          <AnimatePresence mode="wait">
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/callback" element={<Callback />} />
-              <Route path="/error" element={<ErrorPage />} />
-              <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
-              <Route path="/patients/*" element={isAuthenticated ? <Patients /> : <Login />} />
-              <Route path="/appointments" element={isAuthenticated ? <Appointments /> : <Login />} />
-              <Route path="/records" element={isAuthenticated ? <MedicalRecords /> : <Login />} />
-              <Route path="/help/*" element={isAuthenticated ? <Help /> : <Login />} />
-              <Route path="/admin" element={isAuthenticated ? <AdminDashboard /> : <Login />} />
-              <Route path="/admin/patients" element={isAuthenticated ? <ManagePatients /> : <Login />} />
-              <Route path="/admin/providers" element={isAuthenticated ? <ManageProviders /> : <Login />} />
-              <Route path="/admin/appointment-types" element={isAuthenticated ? <ManageAppointmentTypes /> : <Login />} />
-              <Route path="/admin/appointment-statuses" element={isAuthenticated ? <ManageAppointmentStatuses /> : <Login />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AnimatePresence>
-        </div>
-      </main>
-      
-      <Footer />
+      <div>
+        <Routes>
+          {/* Auth routes that never need the authenticated layout */}
+          <Route 
+            path="/login" 
+            element={
+              <UnauthenticatedLayout>
+                <Login />
+              </UnauthenticatedLayout>
+            } 
+          />
+          <Route 
+            path="/signup" 
+            element={
+              <UnauthenticatedLayout>
+                <Signup />
+              </UnauthenticatedLayout>
+            } 
+          />
+          <Route 
+            path="/callback" 
+            element={
+              <UnauthenticatedLayout>
+                <Callback />
+              </UnauthenticatedLayout>
+            } 
+          />
+          <Route 
+            path="/error" 
+            element={
+              <UnauthenticatedLayout>
+                <ErrorPage />
+              </UnauthenticatedLayout>
+            } 
+          />
+          
+          {/* Protected routes - require authentication */}
+          <Route path="/" element={
+            <AppLayout authRequired={true} isAuthenticated={isAuthenticated}>
+              {isAuthenticated ? <Home /> : <Login />}
+            </AppLayout>
+          } />
+          <Route path="/patients/*" element={
+            <AppLayout authRequired={true} isAuthenticated={isAuthenticated}>
+              {isAuthenticated ? <Patients /> : <Login />}
+            </AppLayout>
+          } />
+          <Route path="/appointments" element={
+            <AppLayout authRequired={true} isAuthenticated={isAuthenticated}>
+              {isAuthenticated ? <Appointments /> : <Login />}
+            </AppLayout>
+          } />
+          <Route path="/records" element={
+            <AppLayout authRequired={true} isAuthenticated={isAuthenticated}>
+              {isAuthenticated ? <MedicalRecords /> : <Login />}
+            </AppLayout>
+          } />
+          <Route path="/help/*" element={
+            <AppLayout authRequired={true} isAuthenticated={isAuthenticated}>
+              {isAuthenticated ? <Help /> : <Login />}
+            </AppLayout>
+          } />
+          <Route path="/admin" element={
+            <AppLayout authRequired={true} isAuthenticated={isAuthenticated}>
+              {isAuthenticated ? <AdminDashboard /> : <Login />}
+            </AppLayout>
+          } />
+          <Route path="/admin/patients" element={
+            <AppLayout authRequired={true} isAuthenticated={isAuthenticated}>
+              {isAuthenticated ? <ManagePatients /> : <Login />}
+            </AppLayout>
+          } />
+          <Route path="/admin/providers" element={
+            <AppLayout authRequired={true} isAuthenticated={isAuthenticated}>
+              {isAuthenticated ? <ManageProviders /> : <Login />}
+            </AppLayout>
+          } />
+          <Route path="/admin/appointment-types" element={
+            <AppLayout authRequired={true} isAuthenticated={isAuthenticated}>
+              {isAuthenticated ? <ManageAppointmentTypes /> : <Login />}
+            </AppLayout>
+          } />
+          <Route path="/admin/appointment-statuses" element={
+            <AppLayout authRequired={true} isAuthenticated={isAuthenticated}>
+              {isAuthenticated ? <ManageAppointmentStatuses /> : <Login />}
+            </AppLayout>
+          } />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
       
       <ToastContainer
         position="top-right"
@@ -413,10 +525,9 @@ function App() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="light" // or "dark" based on system preference
+        theme="light"
         toastClassName="rounded-lg shadow-lg"
       />
-      </div>
     </AuthContext.Provider>
   );
 }
